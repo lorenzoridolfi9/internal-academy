@@ -1,22 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, computed } from "vue";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import Dropdown from "@/Components/Dropdown.vue";
+import DropdownLink from "@/Components/DropdownLink.vue";
+import NavLink from "@/Components/NavLink.vue";
+import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import { Link, usePage } from "@inertiajs/vue3";
+import FlashMessages from "@/Components/FlashMessages.vue";
 
 const showingNavigationDropdown = ref(false);
+
+const page = usePage();
+const user = computed(
+    () =>
+        page.props.auth.user as unknown as {
+            name: string;
+            email: string;
+            role: string;
+        },
+);
+const isAdmin = computed(() => user.value.role === "admin");
 </script>
 
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <!-- Primary Navigation Menu -->
+            <nav class="border-b border-gray-100 bg-white">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
                         <div class="flex">
@@ -33,17 +42,40 @@ const showingNavigationDropdown = ref(false);
                             <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
+                                <template v-if="isAdmin">
+                                    <NavLink
+                                        :href="route('admin.dashboard')"
+                                        :active="
+                                            route().current('admin.dashboard')
+                                        "
+                                    >
+                                        Dashboard
+                                    </NavLink>
+                                    <NavLink
+                                        :href="route('admin.workshops.index')"
+                                        :active="
+                                            route().current('admin.workshops.*')
+                                        "
+                                    >
+                                        Workshop
+                                    </NavLink>
+                                </template>
+                                <template v-else>
+                                    <NavLink
+                                        :href="route('employee.dashboard')"
+                                        :active="
+                                            route().current(
+                                                'employee.dashboard',
+                                            )
+                                        "
+                                    >
+                                        Dashboard
+                                    </NavLink>
+                                </template>
                             </div>
                         </div>
 
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
@@ -52,8 +84,7 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                {{ $page.props.auth.user.name }}
-
+                                                {{ user.name }}
                                                 <svg
                                                     class="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -69,20 +100,17 @@ const showingNavigationDropdown = ref(false);
                                             </button>
                                         </span>
                                     </template>
-
                                     <template #content>
                                         <DropdownLink
                                             :href="route('profile.edit')"
+                                            >Profile</DropdownLink
                                         >
-                                            Profile
-                                        </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
                                             as="button"
+                                            >Log Out</DropdownLink
                                         >
-                                            Log Out
-                                        </DropdownLink>
                                     </template>
                                 </Dropdown>
                             </div>
@@ -95,7 +123,7 @@ const showingNavigationDropdown = ref(false);
                                     showingNavigationDropdown =
                                         !showingNavigationDropdown
                                 "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:outline-none"
                             >
                                 <svg
                                     class="h-6 w-6"
@@ -140,50 +168,52 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
-                    >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
+                        <template v-if="isAdmin">
+                            <ResponsiveNavLink
+                                :href="route('admin.dashboard')"
+                                :active="route().current('admin.dashboard')"
+                                >Dashboard</ResponsiveNavLink
                             >
-                                {{ $page.props.auth.user.name }}
+                            <ResponsiveNavLink
+                                :href="route('admin.workshops.index')"
+                                :active="route().current('admin.workshops.*')"
+                                >Workshop</ResponsiveNavLink
+                            >
+                        </template>
+                        <template v-else>
+                            <ResponsiveNavLink
+                                :href="route('employee.dashboard')"
+                                :active="route().current('employee.dashboard')"
+                                >Dashboard</ResponsiveNavLink
+                            >
+                        </template>
+                    </div>
+                    <div class="border-t border-gray-200 pb-1 pt-4">
+                        <div class="px-4">
+                            <div class="text-base font-medium text-gray-800">
+                                {{ user.name }}
                             </div>
                             <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
+                                {{ user.email }}
                             </div>
                         </div>
-
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.edit')"
+                                >Profile</ResponsiveNavLink
+                            >
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
+                                >Log Out</ResponsiveNavLink
                             >
-                                Log Out
-                            </ResponsiveNavLink>
                         </div>
                     </div>
                 </div>
             </nav>
 
             <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
+            <header class="bg-white shadow" v-if="$slots.header">
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
@@ -191,6 +221,9 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Content -->
             <main>
+                <div class="py-4">
+                    <FlashMessages />
+                </div>
                 <slot />
             </main>
         </div>
