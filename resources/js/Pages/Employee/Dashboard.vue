@@ -81,7 +81,9 @@ defineProps<Props>();
                             </div>
                         </div>
 
-                        <div class="ml-6 flex flex-col items-end gap-2">
+                        <div
+                            class="ml-6 flex flex-col items-end gap-2 min-w-[160px]"
+                        >
                             <!-- Già iscritto confermato -->
                             <template
                                 v-if="
@@ -92,7 +94,7 @@ defineProps<Props>();
                                 <span
                                     class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800"
                                 >
-                                    ✅ Iscritto
+                                    Iscritto
                                 </span>
                                 <Link
                                     :href="
@@ -103,7 +105,7 @@ defineProps<Props>();
                                     "
                                     method="delete"
                                     as="button"
-                                    class="text-xs text-red-600 hover:text-red-900"
+                                    class="text-xs text-red-600 hover:text-red-900 whitespace-nowrap"
                                 >
                                     Cancella iscrizione
                                 </Link>
@@ -117,9 +119,9 @@ defineProps<Props>();
                                 "
                             >
                                 <span
-                                    class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800"
+                                    class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800 text-center whitespace-nowrap"
                                 >
-                                    ⏳ In lista d'attesa
+                                    In lista d'attesa
                                 </span>
                                 <Link
                                     :href="
@@ -130,7 +132,7 @@ defineProps<Props>();
                                     "
                                     method="delete"
                                     as="button"
-                                    class="text-xs text-red-600 hover:text-red-900"
+                                    class="text-xs text-red-600 hover:text-red-900 whitespace-nowrap"
                                 >
                                     Rimuoviti dalla lista
                                 </Link>
@@ -160,12 +162,12 @@ defineProps<Props>();
                                     "
                                     method="post"
                                     as="button"
-                                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 whitespace-nowrap"
                                 >
                                     {{
                                         workshop.available_seats > 0
                                             ? "Iscriviti"
-                                            : "Entra in lista d'attesa"
+                                            : "Lista d'attesa"
                                     }}
                                 </Link>
                             </template>
