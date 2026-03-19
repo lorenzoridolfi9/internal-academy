@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
+import { ref, onMounted, onUnmounted } from "vue";
 
 interface Workshop {
     id: number;
@@ -22,7 +23,31 @@ interface Props {
     upcomingWorkshops: Workshop[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const stats = ref<Stats>({ ...props.stats });
+
+let pollingInterval: ReturnType<typeof setInterval> | null = null;
+
+const fetchStats = async () => {
+    try {
+        const response = await fetch(route("admin.stats"));
+        const data = await response.json();
+        stats.value = data;
+    } catch (error) {
+        console.error("Errore nel polling delle statistiche:", error);
+    }
+};
+
+onMounted(() => {
+    pollingInterval = setInterval(fetchStats, 10000);
+});
+
+onUnmounted(() => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
 </script>
 
 <template>
@@ -170,9 +195,7 @@ defineProps<Props>();
                                     }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
-                                    {{
-                                        workshop.confirmed_registrations_count
-                                    }}
+                                    {{ workshop.confirmed_registrations_count }}
                                     / {{ workshop.capacity }}
                                 </td>
                                 <td class="px-6 py-4">

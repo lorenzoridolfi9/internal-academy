@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Registration;
 use App\Models\Workshop;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,4 +38,13 @@ class DashboardController extends Controller
             'upcomingWorkshops' => $upcomingWorkshops,
         ]);
     }
+
+    public function stats(): JsonResponse
+{
+    return response()->json([
+        'totalRegistrations' => Registration::where('status', 'confirmed')->count(),
+        'totalWorkshops' => Workshop::count(),
+        'totalEmployees' => User::where('role', 'employee')->count(),
+    ]);
+}
 }

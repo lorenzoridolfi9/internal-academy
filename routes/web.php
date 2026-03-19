@@ -24,6 +24,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('workshops', WorkshopController::class);
+    Route::get('/stats', [AdminDashboardController::class, 'stats'])->name('stats');
 });
 
 // Route Employee
