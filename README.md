@@ -1,58 +1,179 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Internal Academy 🎓
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Piattaforma per la gestione di workshop aziendali interni. Permette agli Admin di creare e gestire workshop, e ai dipendenti di iscriversi e gestire le proprie partecipazioni.
 
-## About Laravel
+## Stack Tecnologico
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Backend:** Laravel 13 (PHP 8.5)
+- **Frontend:** Vue 3 + Inertia.js + TypeScript + Tailwind CSS
+- **Database:** MySQL 8
+- **Testing:** Pest
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funzionalità
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Must Have
 
-## Learning Laravel
+- ✅ Autenticazione con due ruoli: Admin e Employee
+- ✅ CRUD workshop per gli Admin
+- ✅ Dashboard employee con lista workshop futuri
+- ✅ Iscrizione e cancellazione workshop con un click
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Show off
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- ✅ Waiting list con logica FIFO — se un confermato si cancella, il primo in lista d'attesa viene promosso automaticamente
+- ✅ Controllo sovrapposizioni orarie — impossibile iscriversi a due workshop che si sovrappongono
+- ✅ Comando Artisan `academy:remind` per inviare email di reminder ai partecipanti del giorno successivo
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Top Player
 
-## Agentic Development
+- ✅ Dashboard statistiche Admin (workshop più popolare, totale iscrizioni, dipendenti)
+- ✅ Aggiornamento real-time del contatore iscrizioni tramite polling
+- ✅ 51 test con Pest (Unit + Feature)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Requisiti
+
+- PHP 8.5+
+- Composer
+- Node.js 22+
+- Docker (per il database MySQL)
+
+## Installazione
+
+### 1. Clona il repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/lorenzoridolfi9/internal-academy.git
+cd internal-academy
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Installa le dipendenze PHP
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Installa le dipendenze Node
 
-## Code of Conduct
+```bash
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Configura l'ambiente
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 5. Configura il database
 
-## License
+Aggiorna il file `.env` con le credenziali del database:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=internal_academy
+DB_USERNAME=academy
+DB_PASSWORD=academy
+```
+
+### 6. Avvia il database con Docker
+
+```bash
+docker compose up -d db
+```
+
+### 7. Esegui le migration
+
+```bash
+php artisan migrate
+```
+
+### 8. Avvia l'applicazione
+
+In due terminali separati:
+
+```bash
+# Terminale 1 — Backend
+php artisan serve
+
+# Terminale 2 — Frontend
+npm run dev
+```
+
+L'applicazione è disponibile su `http://localhost:8000`.
+
+## Dati di Test
+
+Per popolare il database con dati di esempio:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Questo crea:
+
+- **1 Admin:** `admin@academy.it` / `password`
+- **10 Employee:** password `password` per tutti (email generate casualmente tramite Faker)
+- **6 Workshop:** 5 normali + 1 pieno con waiting list
+
+## Eseguire i Test
+
+```bash
+php artisan test
+```
+
+Per eseguire solo i test unitari:
+
+```bash
+php artisan test --testsuite=Unit
+```
+
+Per eseguire solo i feature test:
+
+```bash
+php artisan test --testsuite=Feature
+```
+
+## Comando Reminder Email
+
+Per inviare email di promemoria a tutti i partecipanti dei workshop del giorno successivo:
+
+```bash
+php artisan academy:remind
+```
+
+In sviluppo le email vengono scritte nel log (`storage/logs/laravel.log`). Per mandare email reali configura le variabili SMTP nel `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=il_tuo_username
+MAIL_PASSWORD=la_tua_password
+MAIL_FROM_ADDRESS="academy@internal.it"
+MAIL_FROM_NAME="Internal Academy"
+```
+
+## Decisioni Architetturali
+
+### Pattern Controller → Service → Model
+
+I controller sono snelli e delegano tutta la logica di business ai Service (`WorkshopService`, `RegistrationService`). Questo rende il codice testabile, riutilizzabile e manutenibile.
+
+### Inertia.js invece di API REST separata
+
+L'applicazione è full-stack e non necessita di API pubbliche. Inertia elimina la duplicazione di routing e semplifica la gestione dello stato.
+
+### Waiting List FIFO
+
+La promozione dalla waiting list avviene dentro una `DB::transaction()` per garantire atomicità — cancellazione e promozione avvengono sempre insieme, il DB non rimane mai in uno stato inconsistente.
+
+### Polling
+
+Il contatore iscrizioni sulla dashboard admin si aggiorna ogni 10 secondi tramite polling. È una soluzione semplice ed efficace per questo caso d'uso. Per scenari con molti utenti simultanei si potrebbe migrare a WebSocket con Laravel Reverb.
+
+### TypeScript invece di JavaScript
+
+Tutto il frontend è scritto in TypeScript per garantire type safety, ridurre gli errori a runtime e migliorare la manutenibilità del codice.
