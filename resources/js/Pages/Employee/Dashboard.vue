@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
+import confetti from "canvas-confetti";
 
 interface Workshop {
     id: number;
@@ -22,6 +24,22 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const register = (workshopId: number) => {
+    useForm({}).post(route("employee.workshops.register", workshopId), {
+        onSuccess: () => {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+            });
+        },
+    });
+};
+
+const cancel = (workshopId: number) => {
+    useForm({}).delete(route("employee.workshops.unregister", workshopId));
+};
 </script>
 
 <template>
@@ -75,7 +93,9 @@ defineProps<Props>();
                                 >
                                 <span
                                     >👥
-                                    {{ workshop.confirmed_registrations_count }}
+                                    {{
+                                        workshop.confirmed_registrations_count
+                                    }}
                                     / {{ workshop.capacity }} iscritti</span
                                 >
                             </div>
@@ -96,19 +116,12 @@ defineProps<Props>();
                                 >
                                     Iscritto
                                 </span>
-                                <Link
-                                    :href="
-                                        route(
-                                            'employee.workshops.unregister',
-                                            workshop.id,
-                                        )
-                                    "
-                                    method="delete"
-                                    as="button"
+                                <button
+                                    @click="cancel(workshop.id)"
                                     class="text-xs text-red-600 hover:text-red-900 whitespace-nowrap"
                                 >
                                     Cancella iscrizione
-                                </Link>
+                                </button>
                             </template>
 
                             <!-- In waiting list -->
@@ -123,19 +136,12 @@ defineProps<Props>();
                                 >
                                     In lista d'attesa
                                 </span>
-                                <Link
-                                    :href="
-                                        route(
-                                            'employee.workshops.unregister',
-                                            workshop.id,
-                                        )
-                                    "
-                                    method="delete"
-                                    as="button"
+                                <button
+                                    @click="cancel(workshop.id)"
                                     class="text-xs text-red-600 hover:text-red-900 whitespace-nowrap"
                                 >
                                     Rimuoviti dalla lista
-                                </Link>
+                                </button>
                             </template>
 
                             <!-- Non iscritto -->
@@ -153,15 +159,8 @@ defineProps<Props>();
                                 >
                                     Pieno
                                 </span>
-                                <Link
-                                    :href="
-                                        route(
-                                            'employee.workshops.register',
-                                            workshop.id,
-                                        )
-                                    "
-                                    method="post"
-                                    as="button"
+                                <button
+                                    @click="register(workshop.id)"
                                     class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 whitespace-nowrap"
                                 >
                                     {{
@@ -169,7 +168,7 @@ defineProps<Props>();
                                             ? "Iscriviti"
                                             : "Lista d'attesa"
                                     }}
-                                </Link>
+                                </button>
                             </template>
                         </div>
                     </div>
